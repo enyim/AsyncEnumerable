@@ -1,5 +1,5 @@
 ﻿using System.Threading;
-using System.Threading.Tasks;
+using System.Threading.Tasks ;
 
 namespace System.Collections.Async
 {
@@ -50,19 +50,19 @@ namespace System.Collections.Async
 
             internal void SetComplete()
             {
-                _yieldTCS.TrySetCanceled();
                 IsComplete = true;
             }
 
             internal void SetCanceled()
             {
+                _yieldTCS.TrySetCanceled();
                 SetComplete();
             }
 
             internal void SetFailed(Exception ex)
             {
                 _yieldTCS.TrySetException(ex);
-                IsComplete = true;
+                SetComplete();
             }
 
             internal Task<T> OnMoveNext(CancellationToken cancellationToken)
@@ -197,14 +197,14 @@ namespace System.Collections.Async
 
         private bool OnMoveNextComplete(Task<T> task, object state)
         {
-            var yield = (Yield)state;
-            if (yield.IsComplete) {
-                return false;
-            }
-
             if (task.IsFaulted) {
                 _enumerationException = task.Exception;
                 throw _enumerationException;
+            }
+
+            var yield = (Yield)state;
+            if (yield.IsComplete) {
+                return false;
             } else if (task.IsCanceled) {
                 return false;
             } else {
