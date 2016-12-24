@@ -50,6 +50,7 @@ namespace System.Collections.Async
 
             internal void SetComplete()
             {
+                _yieldTCS.TrySetCanceled();
                 IsComplete = true;
             }
 
